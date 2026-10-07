@@ -1,1 +1,341 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NOVA AI Core</title>
+<style>
+:root{--bg:#050d1c;--panel:#08182e;--line:#16507a;--cy:#2ee6ff;--cy2:#1b9fd6;--tx:#d6f4ff;--mu:#7aa6c0;--ok:#3df5a0;--wa:#ffb84a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*:before,*:after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:13px/1.4 "Rajdhani","Segoe UI",Roboto,Arial,sans-serif}
+.app{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:10px;max-width:1200px;margin:auto}
+.p{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px;min-width:0}
+h3{margin:0 0 8px;font-size:12px;font-weight:600;color:var(--cy);letter-spacing:.06em}
+.top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:4px;padding:4px 10px;font-size:12px}
+.chip i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px}
+.clock{text-align:center;font-size:22px;font-weight:600;color:var(--cy)}
+.clock small{display:block;font-size:11px;color:var(--mu);font-weight:400}
+nav{display:flex;flex-direction:column;gap:3px}
+nav a{padding:7px 8px;border-radius:4px;color:var(--mu);display:flex;justify-content:space-between}
+nav a.on{background:#0e3556;color:var(--tx);border:1px solid var(--cy2)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr);gap:10px}
+.row{display:flex;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid #0f2c4a;font-size:12px}
+.row b{font-weight:500;color:var(--ok)}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:250px}
+.globe{position:relative;width:200px;height:200px;margin-bottom:8px}
+.globe svg{width:100%;height:100%}
+.spin{transform-origin:100px 100px;animation:sp 24s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.hero h1{margin:0;font-size:28px;letter-spacing:.35em;font-weight:600;color:var(--cy)}
+.hero p{margin:2px 0 0;color:var(--mu)}
+.feed{display:flex;flex-direction:column;gap:6px}
+.feed div{background:#0b2240;border-left:2px solid var(--cy2);padding:6px 8px;font-size:12px}
+.feed div.w{border-color:var(--wa)}
+.low{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ag div{background:#0b2240;border:1px solid #124469;border-radius:4px;padding:8px;font-size:12px}
+.ag em{display:block;font-style:normal;color:var(--ok);font-size:11px}
+.tl .row span{color:var(--mu)}
+.cmd{display:grid;gap:6px}
+.cmd button,.talk{background:#0b2a4a;color:var(--tx);border:1px solid var(--cy2);border-radius:4px;padding:8px;font:inherit;cursor:pointer;text-align:left}
+.cmd button:focus-visible,.talk:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+.don{display:flex;justify-content:space-around;gap:6px}
+.d{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:12px;position:relative}
+.d:before{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--panel)}
+.d span{position:relative;text-align:center;line-height:1.1}
+.bot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.talk{flex:1;min-width:200px;max-width:420px;margin:auto;text-align:center;font-size:15px;color:var(--cy);border-width:2px}
+.llm{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.llm div{background:#0b2240;padding:6px 8px;border-radius:4px;font-size:12px}
+.llm em{display:block;font-style:normal;color:var(--ok);font-size:11px}
+.voice{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.wave{display:flex;align-items:center;gap:3px;height:34px}
+.wave i{width:3px;height:6px;background:var(--cy2);border-radius:2px}
+.on .wave i,.wave.live i{animation:wv .8s ease-in-out infinite alternate}
+.wave i:nth-child(2n){animation-delay:.15s}.wave i:nth-child(3n){animation-delay:.3s}
+@keyframes wv{to{height:30px;background:var(--cy)}}
+@media (prefers-reduced-motion:reduce){.wave.live i{animation:none;height:18px}}
+#vt{flex:1;min-width:180px;color:var(--mu)}
+#vt b{color:var(--tx);font-weight:500}
+.talk.rec{background:#0e3556;color:var(--ok);border-color:var(--ok)}
+@media(max-width:860px){.app{grid-template-columns:1fr}nav{flex-direction:row;overflow-x:auto}nav a{white-space:nowrap}.main,.low{grid-template-columns:1fr}.ag{grid-template-columns:1fr 1fr}.hero{order:-1}}
+</style>
+</head>
+<body>
+<div class="app">
 
+<div class="p top">
+<span class="chip"><i></i>Sistem durumu: Optimal</span>
+<div class="clock"><span id="t">11:18:21</span><small id="dt">Çarşamba, 7 Ekim 2026</small></div>
+<span class="chip">Operatör · Komutan</span>
+</div>
+
+<nav class="p" aria-label="Menü">
+<a class="on">Komuta merkezi</a>
+<a>Yapay zekâ çekirdeği</a>
+<a>Ajanlar</a>
+<a>Görevler <span>3</span></a>
+<a>Takvim</a>
+<a>Bellek</a>
+<a>Konuşmalar <span>12</span></a>
+<a>Bilgi tabanı</a>
+<a>Araçlar</a>
+<a>İş akışları</a>
+</nav>
+
+<div>
+<div class="main">
+
+<section class="p">
+<h3>Çekirdek özeti</h3>
+<div class="row">Çekirdek<b>Aktif</b></div>
+<div class="row">Bellek<b>3.380</b></div>
+<div class="row">Ses<b>Çevrimiçi</b></div>
+<div class="row">Ajanlar<b>2 dinliyor</b></div>
+<div class="row">Modeller<b>4 bağlı</b></div>
+<div class="row">Sistem<b>Optimal</b></div>
+</section>
+
+<section class="p hero" aria-label="Yapay zekâ çekirdeği">
+<div class="globe">
+<svg viewBox="0 0 200 200" role="img" aria-label="Holografik küre">
+<circle cx="100" cy="100" r="70" fill="#0b2a4a" stroke="#2ee6ff" stroke-width="1"/>
+<g fill="none" stroke="#1b9fd6" stroke-width=".7">
+<ellipse cx="100" cy="100" rx="70" ry="24"/>
+<ellipse cx="100" cy="100" rx="70" ry="48"/>
+<ellipse cx="100" cy="100" rx="24" ry="70"/>
+<ellipse cx="100" cy="100" rx="48" ry="70"/>
+<path d="M30 100H170M100 30V170"/>
+</g>
+<g class="spin" fill="none" stroke="#2ee6ff" stroke-width="1">
+<ellipse cx="100" cy="100" rx="95" ry="30" transform="rotate(-25 100 100)"/>
+<ellipse cx="100" cy="100" rx="95" ry="30" transform="rotate(35 100 100)" stroke-dasharray="4 5"/>
+<circle cx="188" cy="70" r="4" fill="#2ee6ff"/>
+</g>
+</svg>
+</div>
+<h1>NOVA</h1>
+<p>AI çekirdeği · v3.0.0</p>
+</section>
+
+<section class="p">
+<h3>Canlı akış</h3>
+<div class="feed">
+<div>Ürün ekibiyle tasarım toplantısı · 11:30</div>
+<div class="w">2 görev gecikti</div>
+<div>3 çekme isteği yanıtınızı bekliyor</div>
+<div>İşlemci kullanımı %15</div>
+</div>
+</section>
+
+</div>
+
+<div class="low">
+
+<section class="p">
+<h3>Aktif ajanlar</h3>
+<div class="ag">
+<div>Kod ajanı<em>Aktif</em></div>
+<div>Araştırma ajanı<em>Aktif</em></div>
+<div>Bellek ajanı<em>Beklemede</em></div>
+<div>Tarayıcı ajanı<em>Beklemede</em></div>
+<div>Görev ajanı<em>Beklemede</em></div>
+<div>Sistem ajanı<em>Hazır</em></div>
+</div>
+
+<h3 style="margin-top:12px">Görev zaman çizelgesi</h3>
+<div class="tl">
+<div class="row">Günlük toplantı<span>09:30</span></div>
+<div class="row">HUD tasarımını bitir<span>11:15</span></div>
+<div class="row">Derin çalışma bloğu<span>14:00</span></div>
+</div>
+</section>
+
+<section class="p">
+<h3>Sistem izleme</h3>
+<div class="don">
+<div class="d" style="background:conic-gradient(#2ee6ff 15%,#12365a 0)">
+<span>CPU<br>%15</span>
+</div>
+<div class="d" style="background:conic-gradient(#2ee6ff 54%,#12365a 0)">
+<span>RAM<br>%54</span>
+</div>
+<div class="d" style="background:conic-gradient(#2ee6ff 40%,#12365a 0)">
+<span>Disk<br>%40</span>
+</div>
+</div>
+
+<h3 style="margin-top:12px">Bellek bilgisi</h3>
+<div class="row">Anılar<b>3.380</b></div>
+<div class="row">Oturum<b>22</b></div>
+</section>
+
+<section class="p">
+<h3>Hızlı komutlar</h3>
+<div class="cmd">
+<button>Yeni görev başlat</button>
+<button>Takvimi aç</button>
+<button>Sesli sohbeti başlat</button>
+<button>İş akışını çalıştır</button>
+</div>
+
+<h3 style="margin-top:12px">Model durumu</h3>
+<div class="llm">
+<div>Model A<em>Bağlı</em></div>
+<div>Model B<em>Bağlı</em></div>
+<div>Model C<em>Bağlı</em></div>
+<div>Model D<em>Bağlı</em></div>
+</div>
+</section>
+
+</div>
+</div>
+
+<div class="p voice" aria-live="polite">
+<h3 style="margin:0">Ses</h3>
+<div class="wave" id="wv">
+<i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i>
+</div>
+<div id="vt">Konuşmak için alttaki düğmeye bas. Dene: "saat kaç", "görevlerim", "merhaba".</div>
+</div>
+
+<div class="p bot">
+<span class="chip">Hava: 29°C Bulutlu</span>
+<button class="talk" id="talk">NOVA ile konuş</button>
+<span class="chip">Ağ: Mükemmel</span>
+</div>
+
+</div>
+
+<script>
+(function(){
+var t=document.getElementById('t'),d=document.getElementById('dt');
+
+function u(){
+var n=new Date();
+t.textContent=n.toLocaleTimeString('tr-TR');
+d.textContent=n.toLocaleDateString('tr-TR',{
+weekday:'long',
+day:'numeric',
+month:'long',
+year:'numeric'
+})
+}
+
+u();
+setInterval(u,1000)
+})();
+
+(function(){
+var b=document.getElementById('talk'),
+vt=document.getElementById('vt'),
+w=document.getElementById('wv'),
+rec=null,
+on=false;
+
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+function say(s){
+vt.innerHTML='<b>NOVA:</b> '+s;
+
+try{
+if(window.speechSynthesis){
+var m=new SpeechSynthesisUtterance(s);
+m.lang='tr-TR';
+speechSynthesis.cancel();
+speechSynthesis.speak(m)
+}
+}catch(e){}
+}
+
+function reply(q){
+q=q.toLowerCase();
+
+if(q.indexOf('saat')>-1)
+return 'Saat '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+
+if(q.indexOf('görev')>-1)
+return 'Bugün 3 görevin var, 2 tanesi gecikmiş durumda.';
+
+if(q.indexOf('merhaba')>-1||q.indexOf('selam')>-1)
+return 'Merhaba, seni dinliyorum.';
+
+if(q.indexOf('hava')>-1)
+return 'Hava 29 derece ve bulutlu.';
+
+return 'Şunu duydum: '+q+'. Bu komutu henüz bilmiyorum.'
+}
+
+function stop(){
+on=false;
+b.classList.remove('rec');
+w.classList.remove('live');
+b.textContent='NOVA ile konuş'
+}
+
+b.addEventListener('click',function(){
+
+if(!SR){
+vt.textContent='Bu tarayıcı ses tanımayı desteklemiyor. Chrome veya Safari dene.';
+return
+}
+
+if(on){
+try{rec.stop()}catch(e){}
+stop();
+return
+}
+
+try{
+rec=new SR();
+rec.lang='tr-TR';
+rec.interimResults=true;
+rec.continuous=false;
+
+rec.onstart=function(){
+on=true;
+b.classList.add('rec');
+w.classList.add('live');
+b.textContent='Dinliyorum… durdurmak için dokun';
+vt.textContent='Dinliyorum…'
+};
+
+rec.onresult=function(e){
+var t='';
+
+for(var i=e.resultIndex;i<e.results.length;i++)
+t+=e.results[i][0].transcript;
+
+vt.innerHTML='<b>Sen:</b> '+t;
+
+if(e.results[e.results.length-1].isFinal)
+say(reply(t))
+};
+
+rec.onerror=function(e){
+stop();
+
+vt.textContent=
+e.error==='not-allowed'||e.error==='service-not-allowed'
+?'Mikrofon izni verilmedi. Tarayıcı ayarlarından izin ver.'
+:'Ses hatası: '+e.error
+};
+
+rec.onend=stop;
+rec.start()
+
+}catch(e){
+stop();
+vt.textContent='Mikrofon başlatılamadı.'
+}
+
+});
+})();
+</script>
+
+</body>
+</html>
